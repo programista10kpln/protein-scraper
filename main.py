@@ -11,18 +11,23 @@ def get_protein_from_kfd():
     numbers = [i.find('a', attrs={'rel': 'nofollow'}).text.strip() for i in page_list if
                i.find('a', attrs={'rel': 'nofollow'})]
 
-    products = []
+    products = {}
 
     for number in range(1, int(numbers[-1]) + 1):
         current_url = url + f'&page={number}'
         current_site = requests.get(current_url)
         current_soup = BeautifulSoup(current_site.content, 'html.parser')
-        products.extend(current_soup.findAll('div', class_='product-description'))
+        descriptions = current_soup.findAll('div', class_='product-description')
+        for description in descriptions:
+            # name = description.find('h2', class_='h3 product-title')
+            name = description.find('a')
+            price = description.find('span', class_='price')
+            products[name.text.strip()] = price.text.strip()
 
     # for i in products:
     #     yield i.text
 
-    return len(products)
+    return products
 
     # numbers = []
     # for i in page_list:
