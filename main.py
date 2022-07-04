@@ -91,26 +91,31 @@ def get_protein_from_my_protein():
     return products
 
 
-def get_protein_from_body_house():  # doesnt work
-    url = 'https://bodyhouse.pl/pol_m_Suplementy_Odzywki-bialkowe-307.html#1000'
-    site = requests.get(url)
+def get_protein_from_body_house():
+    url = "https://bodyhouse.pl/settings.php"
+    querystring = {"sort_order": "price-a", "portions": "1000"}
+    headers = {
+        "Referer": "https://bodyhouse.pl/pol_m_Suplementy_Odzywki-bialkowe-307.html"
+    }
+    url = 'https://bodyhouse.pl/settings.php?sort_order=price-a&portions=120'
+    site = requests.get(url, headers=headers, params=querystring)
     soup = BeautifulSoup(site.content, 'html.parser')
 
     products = []
 
     product_tiles = soup.findAll('div', class_='product_wrapper')
-    # for tile in product_tiles:
-    #     name = tile.find('div', class_='athenaProductBlock_title')
-    #     price = tile.find('div', class_='athenaProductBlock_priceBlock')
-    #     link = tile.find('a')
-    #
-    #     products.append({
-    #         'name': name.text.strip(),
-    #         'price': price.text.strip().replace('\n', ' ').split('ł')[0] + 'ł',
-    #         'link': f'https://www.myprotein.pl{link["href"]}'
-    #     })
+    for tile in product_tiles:
+        name = tile.find('a', class_='product-name')
+        price = tile.find('span', class_='price')
+        link = tile.find('a', class_='product-name')
 
-    return soup
+        products.append({
+            'name': name.text.strip(),
+            'price': price.text.strip(),
+            'link': f'https://bodyhouse.pl/{link["href"]}'
+        })
+
+    return products
 
 # print(get_protein_from_kfd())
 # print(get_protein_from_sfd())
