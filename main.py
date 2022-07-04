@@ -97,7 +97,6 @@ def get_protein_from_body_house():
     headers = {
         "Referer": "https://bodyhouse.pl/pol_m_Suplementy_Odzywki-bialkowe-307.html"
     }
-    url = 'https://bodyhouse.pl/settings.php?sort_order=price-a&portions=120'
     site = requests.get(url, headers=headers, params=querystring)
     soup = BeautifulSoup(site.content, 'html.parser')
 
@@ -117,7 +116,8 @@ def get_protein_from_body_house():
 
     return products
 
-# print(get_protein_from_kfd())
-# print(get_protein_from_sfd())
-# print(get_protein_from_my_protein())
-# print(get_protein_from_body_house())
+
+print(get_protein_from_kfd())
+print(get_protein_from_sfd())
+print(get_protein_from_my_protein())
+print(get_protein_from_body_house())
