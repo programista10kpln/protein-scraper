@@ -1,3 +1,5 @@
+import re
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -50,12 +52,18 @@ def get_protein_from_sfd():
         for tile in product_tiles:
             name = tile.find('h3')
             name_formatted = ' '.join(name.text.split())
-            price = tile.find('span', class_='cena')
+            quantity = re.findall('\d+ *k* *g+', name_formatted, re.IGNORECASE)
+            price = tile.find('span', class_='cena').text
+            price_numeric = float('.'.join(re.findall('\d+', price, re.IGNORECASE)))
+            quantity_numeric = int(re.findall('\d+', name_formatted, re.IGNORECASE)[0])
+            price_for_100g = round((price_numeric / quantity_numeric) * 100, 2)
             link = tile.find('a')
 
             products.append({
                 'name': name_formatted,
-                'price': price.text.strip(),
+                'price': price.strip(),
+                'quantity': quantity[0],
+                'price for 100g': price_for_100g,
                 'link': f'https:{link["href"]}'
             })
 
@@ -117,7 +125,9 @@ def get_protein_from_body_house():
     return products
 
 
-print(get_protein_from_kfd())
-print(get_protein_from_sfd())
-print(get_protein_from_my_protein())
-print(get_protein_from_body_house())
+# print(get_protein_from_kfd())
+proteins = get_protein_from_sfd()
+tanio = sorted(proteins, key=lambda item: item['price for 100g'])
+print(tanio)
+# print(get_protein_from_my_protein())
+# print(get_protein_from_body_house())
